@@ -1,9 +1,4 @@
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
+import { FormEvent, useEffect, useState } from "react";
 import Paper from "@mui/material/Paper";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
@@ -17,184 +12,203 @@ import {
   studentsArray,
   lessonsArray,
   addScore,
-  scoreArray,
 } from "./Redux/features/studentSlice";
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Button, TextField } from "@mui/material";
+import { Box, Button, Grid, TextField } from "@mui/material";
 import { Lesson, Score, Student } from "./types/student";
 import { toast } from "react-toastify";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { scoreSchema } from "./validation/inputSchema";
-import { SubmitHandler, useForm } from "react-hook-form";
 import { useAppDispatch } from "./Redux/hooks/reduxHooks";
+import { styled } from "@mui/material/styles";
+import ScoresTable from "./ScoresTable";
+import { Dayjs } from "dayjs";
 
 export default function Scores() {
   const dispatch = useAppDispatch();
   const studentData = useSelector(studentsArray);
   const lessonData = useSelector(lessonsArray);
   const navigate = useNavigate();
-  const [selectValue, setSelectValue] = useState("");
-  const [classes, setClasses] = useState("0");
-  const [selectedStudent, setSelectedStudent] = useState("");
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<Score>({
-    resolver: yupResolver(scoreSchema),
+  const [selectValue, setSelectValue] = useState<string>("");
+  const [classes, setClasses] = useState<string>("0");
+  const [selectedData, setSelectedData] = useState<Score>({
+    id: 0,
+    name: "",
+    teacherName: "",
+    lessonName: "",
+    classes: "",
+    datePicker: "",
+    score: 0,
   });
+  const [score, setScore] = useState<string>("");
+  const [datePicker, setDatePicker] = useState<Dayjs | null>(null);
 
   const goBack = () => {
     navigate("/");
   };
+
   const notify = () =>
     toast.error(`No students in class ${classes} were found.`);
 
-  const handleChange = (event: SelectChangeEvent) => {
-    const selectedLessonNo = event.target.value;
-    setSelectValue(event.target.value as string);
+  const handleChange = (event: SelectChangeEvent<string>) => {
+    const selectedValue = event.target.value;
+    setSelectValue(selectedValue);
+
     const filteredLesson = lessonData.find(
-      (lesson: Lesson) => lesson.classes === selectedLessonNo
+      (lesson: Lesson) => lesson.classes === selectedValue
     );
     const filteredStudent = studentData.find(
-      (student: Student) => student.classes === selectedLessonNo
+      (student: Student) => student.classes === selectedValue
     );
 
     if (filteredLesson) {
       setClasses(filteredLesson.classes);
-    } else if (filteredStudent) {
+      setSelectedData((prevData) => ({
+        ...prevData,
+        teacherName: filteredLesson.teacherName,
+        lessonName: filteredLesson.lessonName,
+      }));
+    }
+
+    if (filteredStudent) {
       setClasses(filteredStudent.classes);
+      setSelectedData((prevData) => ({
+        ...prevData,
+        name: `${filteredStudent.name} ${filteredStudent.surname}`,
+        classes: filteredStudent.classes,
+      }));
+    }
+
+    if (!filteredLesson && !filteredStudent) {
+      notify();
     }
   };
 
   useEffect(() => {
-    if (classes) {
-      const filteredStudent = studentData.find(
-        (student: Student) => student.classes === classes
-      );
-      if (filteredStudent) {
-        setSelectedStudent(filteredStudent.classes);
-      } else if (classes !== "0" || !classes) {
-        notify();
-      }
-    }
-  }, [classes]);
+    if (datePicker) {
+      const day = datePicker.date().toString().padStart(2, "0");
+      const month = (datePicker.month() + 1).toString().padStart(2, "0");
+      const year = datePicker.year();
 
-  const onSubmit: SubmitHandler<Score> = (data) => {
-    dispatch(addScore(data));
+      const dateString = `${day}:${month}:${year}`;
+
+      setSelectedData((prevData) => ({
+        ...prevData,
+        score: parseInt(score) || 0,
+        datePicker: dateString,
+        classes,
+      }));
+    }
+  }, [score, datePicker, classes]);
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    dispatch(addScore(selectedData));
   };
-  const scoreData = useSelector(scoreArray);
-  console.log(scoreData);
+
+  const Item = styled(Paper)(({ theme }) => ({
+    backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
+    ...theme.typography.body2,
+    padding: theme.spacing(1),
+    textAlign: "center",
+    color: theme.palette.text.secondary,
+  }));
+
+  const handleDateChange = (date: Dayjs | null) => {
+    setDatePicker(date);
+  };
 
   return (
-    <TableContainer component={Paper}>
-      <Button variant="contained" onClick={() => goBack()}>
+    <Box sx={{ flexGrow: 1 }}>
+      <Button
+        style={{ marginBottom: "20px" }}
+        variant="contained"
+        onClick={goBack}
+      >
         Back
       </Button>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            <TableCell sx={{ fontWeight: "bold" }}>Student</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }} align="center">
-              Teacher
-            </TableCell>
-            <TableCell sx={{ fontWeight: "bold" }} align="center">
-              Lesson
-            </TableCell>
-            <TableCell sx={{ fontWeight: "bold" }} align="center">
-              Class
-            </TableCell>
-            <TableCell sx={{ fontWeight: "bold" }} align="center">
-              Date-Time
-            </TableCell>
-            <TableCell sx={{ fontWeight: "bold" }} align="center">
-              Score
-            </TableCell>
-          </TableRow>
-        </TableHead>
 
-        <TableBody>
-          <TableRow sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
-            <TableCell component="th" scope="row">
-              <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Student</InputLabel>
-                <Select
-                  {...register("studentName")}
-                  labelId="demo-simple-select-label"
-                  defaultValue={selectedStudent}
-                  id="demo-simple-select"
-                  value={selectValue}
-                  label={"Student"}
-                  onChange={handleChange}
-                >
-                  {studentData.map((student: Student) => (
-                    <MenuItem key={student.no} value={student.classes}>
-                      {student.name + " " + student.surname}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </TableCell>
-            <TableCell align="center">
-              <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Teacher</InputLabel>
-                <Select
-                  {...register("teacherName")}
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={selectValue}
-                  label="teacher"
-                  onChange={handleChange}
-                >
-                  {lessonData.map((lesson: Lesson) => (
-                    <MenuItem key={lesson.no} value={lesson.classes}>
-                      {lesson.teacherName}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </TableCell>
-            <TableCell align="center">
-              <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Lesson</InputLabel>
-                <Select
-                  {...register("lessonName")}
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={selectValue}
-                  label="lesson"
-                  onChange={handleChange}
-                >
-                  {lessonData.map((lesson: Lesson) => (
-                    <MenuItem key={lesson.no} value={lesson.classes}>
-                      {lesson.lessonName}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </TableCell>
-            <TableCell align="center">
-              <Box sx={{ border: 1, paddingY: 2 }}>{classes}</Box>
-            </TableCell>
-            <TableCell align="right">
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker />
-              </LocalizationProvider>
-            </TableCell>
-            <TableCell align="center">
-              <TextField
-                {...register("score")}
-                type="number"
-                id="outlined-basic"
-                label="Score"
-                variant="outlined"
-              />
-            </TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
-    </TableContainer>
+      <form onSubmit={handleSubmit}>
+        <Grid container spacing={2}>
+          <Grid item xs={2}>
+            <FormControl fullWidth>
+              <InputLabel id="student-select-label">Student</InputLabel>
+              <Select
+                labelId="student-select-label"
+                id="student-select"
+                value={selectValue}
+                label="Student"
+                onChange={handleChange}
+              >
+                {studentData.map((student: Student) => (
+                  <MenuItem key={student.no} value={student.classes}>
+                    {student.name + " " + student.surname}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={2}>
+            <FormControl fullWidth>
+              <InputLabel id="teacher-select-label">Teacher</InputLabel>
+              <Select
+                labelId="teacher-select-label"
+                id="teacher-select"
+                value={selectValue}
+                label="Teacher"
+                onChange={handleChange}
+              >
+                {lessonData.map((lesson: Lesson) => (
+                  <MenuItem key={lesson.no} value={lesson.classes}>
+                    {lesson.teacherName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={2}>
+            <FormControl fullWidth>
+              <InputLabel id="lesson-select-label">Lesson</InputLabel>
+              <Select
+                labelId="lesson-select-label"
+                id="lesson-select"
+                value={selectValue}
+                label="Lesson"
+                onChange={handleChange}
+              >
+                {lessonData.map((lesson: Lesson) => (
+                  <MenuItem key={lesson.no} value={lesson.classes}>
+                    {lesson.lessonName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={2}>
+            <Box sx={{ border: 1, paddingY: 2, paddingLeft: 1 }}>{classes}</Box>
+          </Grid>
+          <Grid item xs={2}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker onChange={handleDateChange} />
+            </LocalizationProvider>
+          </Grid>
+          <Grid item xs={2}>
+            <TextField
+              onChange={(e) => setScore(e.target.value)}
+              type="number"
+              id="score"
+              label="Score"
+              variant="outlined"
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Item>
+              <Button type="submit" variant="contained" color="primary">
+                Submit
+              </Button>
+            </Item>
+          </Grid>
+        </Grid>
+      </form>
+      <ScoresTable />
+    </Box>
   );
 }

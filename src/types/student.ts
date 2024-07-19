@@ -13,10 +13,12 @@ export type Lesson = {
   classes: string;
 };
 export type Score = {
-  studentName: string;
+  id: number;
+  name?: string;
   teacherName: string;
   lessonName: string;
-  date: string;
+  classes?: string;
+  datePicker?: string;
   score: number;
 };
 
