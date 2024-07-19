@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
@@ -12,7 +12,13 @@ import { Lesson } from "./types/student";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import LessonsTable from "./LessonsTable";
-import { addLesson } from "./Redux/features/studentSlice";
+import {
+  addLesson,
+  deleteLesson,
+  lessonsArray,
+  updateLesson,
+} from "./Redux/features/studentSlice";
+import { useSelector } from "react-redux";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -24,25 +30,56 @@ const Item = styled(Paper)(({ theme }) => ({
 
 export default function Lessons() {
   const dispatch = useAppDispatch();
-  const [lessoName, setlessonName] = useState("");
-  const [teacherName, setTeacherName] = useState("");
-  const [teacherNo, setTeacherNo] = useState("");
-  const [clas, setClas] = useState("");
   const navigate = useNavigate();
+  const lessonData = useSelector(lessonsArray);
+  const [editableLesson, setEditableLesson] = useState<Lesson | null>(null);
 
-  const goBack = () => {
-    navigate("/");
-  };
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
+    setValue,
   } = useForm<Lesson>({
     resolver: yupResolver(lessonSchema),
   });
 
+  useEffect(() => {
+    if (editableLesson) {
+      setValue("lessonName", editableLesson.lessonName);
+      setValue("teacherName", editableLesson.teacherName);
+      setValue("no", editableLesson.no);
+      setValue("classes", editableLesson.classes);
+    }
+  }, [editableLesson, setValue]);
+
+  const goBack = () => {
+    navigate("/");
+  };
+
   const onSubmit: SubmitHandler<Lesson> = (data) => {
-    dispatch(addLesson(data));
+    if (editableLesson) {
+      dispatch(updateLesson({ ...data, id: editableLesson.id }));
+    } else {
+      const dataWithId = {
+        ...data,
+        id: Math.random().toString(36).slice(2, 9),
+      };
+      dispatch(addLesson(dataWithId));
+    }
+    reset();
+    setEditableLesson(null);
+  };
+
+  const editLesson = (id: string) => {
+    const lesson = lessonData.find((lesson: Lesson) => lesson.id === id);
+    if (lesson) {
+      setEditableLesson(lesson);
+    }
+  };
+
+  const destroyLesson = (id: string) => {
+    dispatch(deleteLesson(id));
   };
 
   return (
@@ -61,11 +98,9 @@ export default function Lessons() {
                 id="outlined-basic"
                 label="Lesson Name"
                 variant="outlined"
-                value={lessoName}
                 helperText={
                   errors.lessonName && `${errors.lessonName?.message}`
                 }
-                onChange={(e) => setlessonName(e.target.value)}
               />
             </Item>
           </Grid>
@@ -81,8 +116,6 @@ export default function Lessons() {
                 helperText={
                   errors.teacherName && `${errors.teacherName?.message}`
                 }
-                value={teacherName}
-                onChange={(e) => setTeacherName(e.target.value)}
               />
             </Item>
           </Grid>
@@ -97,8 +130,6 @@ export default function Lessons() {
                 label="Teacher No"
                 variant="outlined"
                 helperText={errors.no && `${errors.no?.message}`}
-                value={teacherNo}
-                onChange={(e) => setTeacherNo(e.target.value)}
               />
             </Item>
           </Grid>
@@ -112,21 +143,19 @@ export default function Lessons() {
                 label="Class"
                 variant="outlined"
                 helperText={errors.classes && `${errors.classes?.message}`}
-                value={clas}
-                onChange={(e) => setClas(e.target.value)}
               />
             </Item>
           </Grid>
           <Grid item xs={12}>
             <Item>
               <Button type="submit" variant="contained" color="primary">
-                Submit
+                {editableLesson ? "Update" : "Submit"}
               </Button>
             </Item>
           </Grid>
         </Grid>
       </form>
-      <LessonsTable />
+      <LessonsTable editData={editLesson} deleteData={destroyLesson} />
     </Box>
   );
 }

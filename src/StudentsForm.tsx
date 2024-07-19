@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
@@ -6,12 +6,18 @@ import Grid from "@mui/material/Grid";
 import { TextField, Button } from "@mui/material";
 import StudentsTable from "./Students-table";
 import { useAppDispatch } from "./Redux/hooks/reduxHooks";
-import { addStudent } from "./Redux/features/studentSlice";
+import {
+  addStudent,
+  updateStudent,
+  studentsArray,
+  deleteStudent,
+} from "./Redux/features/studentSlice";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { studentSchema } from "./validation/inputSchema";
 import { Student } from "./types/student";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -23,25 +29,56 @@ const Item = styled(Paper)(({ theme }) => ({
 
 export default function Students() {
   const dispatch = useAppDispatch();
-  const [name, setName] = useState("");
-  const [surname, setSurname] = useState("");
-  const [studentNo, setStudentNo] = useState("");
-  const [studentClass, setStudentClass] = useState("");
   const navigate = useNavigate();
+  const studentData = useSelector(studentsArray);
+  const [editableStudent, setEditableStudent] = useState<Student | null>(null);
 
-  const goBack = () => {
-    navigate("/");
-  };
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
+    setValue,
   } = useForm<Student>({
     resolver: yupResolver(studentSchema),
   });
 
+  useEffect(() => {
+    if (editableStudent) {
+      setValue("name", editableStudent.name);
+      setValue("surname", editableStudent.surname);
+      setValue("no", editableStudent.no);
+      setValue("classes", editableStudent.classes);
+    }
+  }, [editableStudent, setValue]);
+
+  const goBack = () => {
+    navigate("/");
+  };
+
   const onSubmit: SubmitHandler<Student> = (data) => {
-    dispatch(addStudent(data));
+    if (editableStudent) {
+      dispatch(updateStudent({ ...data, id: editableStudent.id }));
+    } else {
+      const dataWithId = {
+        ...data,
+        id: Math.random().toString(36).slice(2, 9),
+      };
+      dispatch(addStudent(dataWithId));
+    }
+    reset();
+    setEditableStudent(null);
+  };
+
+  const editStudent = (id: string) => {
+    const student = studentData.find((student: Student) => student.id === id);
+    if (student) {
+      setEditableStudent(student);
+    }
+  };
+
+  const destroyStudent = (id: string) => {
+    dispatch(deleteStudent(id));
   };
 
   return (
@@ -60,9 +97,7 @@ export default function Students() {
                 id="outlined-basic"
                 label="Student Name"
                 variant="outlined"
-                value={name}
                 helperText={errors.name && `${errors.name?.message}`}
-                onChange={(e) => setName(e.target.value)}
               />
             </Item>
           </Grid>
@@ -76,8 +111,6 @@ export default function Students() {
                 label="Student Surname"
                 variant="outlined"
                 helperText={errors.surname && `${errors.surname?.message}`}
-                value={surname}
-                onChange={(e) => setSurname(e.target.value)}
               />
             </Item>
           </Grid>
@@ -92,8 +125,6 @@ export default function Students() {
                 label="Student No"
                 variant="outlined"
                 helperText={errors.no && `${errors.no?.message}`}
-                value={studentNo}
-                onChange={(e) => setStudentNo(e.target.value)}
               />
             </Item>
           </Grid>
@@ -107,21 +138,19 @@ export default function Students() {
                 label="Class"
                 variant="outlined"
                 helperText={errors.classes && `${errors.classes?.message}`}
-                value={studentClass}
-                onChange={(e) => setStudentClass(e.target.value)}
               />
             </Item>
           </Grid>
           <Grid item xs={12}>
             <Item>
               <Button type="submit" variant="contained" color="primary">
-                Submit
+                {editableStudent ? "Update" : "Submit"}
               </Button>
             </Item>
           </Grid>
         </Grid>
       </form>
-      <StudentsTable />
+      <StudentsTable editData={editStudent} deleteData={destroyStudent} />
     </Box>
   );
 }

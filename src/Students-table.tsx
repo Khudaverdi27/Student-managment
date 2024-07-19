@@ -7,8 +7,13 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { useSelector } from "react-redux";
 import { studentsArray } from "./Redux/features/studentSlice";
+import { Button } from "@mui/material";
+import { editAndDeleteType } from "./types/student";
 
-export default function StudentsTable() {
+export default function StudentsTable({
+  editData,
+  deleteData,
+}: editAndDeleteType) {
   const studentData = useSelector(studentsArray);
 
   return (
@@ -26,6 +31,12 @@ export default function StudentsTable() {
             <TableCell sx={{ fontWeight: "bold" }} align="center">
               Class
             </TableCell>
+            <TableCell sx={{ fontWeight: "bold" }} align="center">
+              Edit
+            </TableCell>
+            <TableCell sx={{ fontWeight: "bold" }} align="center">
+              Delete
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -40,6 +51,24 @@ export default function StudentsTable() {
               <TableCell align="center">{student.surname}</TableCell>
               <TableCell align="center">{student.no}</TableCell>
               <TableCell align="center">{student.classes}</TableCell>
+              <TableCell align="center">
+                <Button
+                  onClick={() => editData(student.id)}
+                  variant="contained"
+                  color="success"
+                >
+                  Edit
+                </Button>
+              </TableCell>
+              <TableCell align="center">
+                <Button
+                  onClick={() => deleteData(student.id)}
+                  variant="contained"
+                  color="error"
+                >
+                  Delete
+                </Button>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

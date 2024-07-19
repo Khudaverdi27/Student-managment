@@ -22,17 +22,32 @@ function Home() {
         </Grid>
         <Grid item xs={4}>
           <Item sx={{ bgcolor: "primary.main", color: "white" }}>
-            <Link to={"/students"}>Students</Link>
+            <Link
+              style={{ color: "white", textDecoration: "none" }}
+              to={"/students"}
+            >
+              Students
+            </Link>
           </Item>
         </Grid>
         <Grid item xs={4}>
           <Item sx={{ bgcolor: "secondary.main", color: "white" }}>
-            <Link to={"/lessons"}>Lessons</Link>
+            <Link
+              style={{ color: "white", textDecoration: "none" }}
+              to={"/lessons"}
+            >
+              Lessons
+            </Link>
           </Item>
         </Grid>
         <Grid item xs={4}>
           <Item sx={{ bgcolor: "warning.main", color: "white" }}>
-            <Link to={"/scores"}>Scores</Link>
+            <Link
+              style={{ color: "white", textDecoration: "none" }}
+              to={"/scores"}
+            >
+              Scores
+            </Link>
           </Item>
         </Grid>
       </Grid>

@@ -12,3 +12,10 @@ export const lessonSchema = yup.object({
   no: yup.number().required("Teacher No is required"),
   classes: yup.string().required("class is required"),
 });
+export const scoreSchema = yup.object({
+  studentName: yup.string().required("Student name is required"),
+  teacherName: yup.string().required("Teacher Name is required"),
+  lessonName: yup.string().required("Lesson Name is required"),
+  date: yup.string().required("Date is required"),
+  score: yup.number().required("Score is required"),
+});
