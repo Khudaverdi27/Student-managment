@@ -45,8 +45,7 @@ export default function Scores() {
     navigate("/");
   };
 
-  const notify = () =>
-    toast.error(`No students in class ${classes} were found.`);
+  const notify = () => toast.error(`No students in class were found.`);
 
   const handleChange = (event: SelectChangeEvent<string>) => {
     const selectedValue = event.target.value;
@@ -75,6 +74,8 @@ export default function Scores() {
         name: `${filteredStudent.name} ${filteredStudent.surname}`,
         classes: filteredStudent.classes,
       }));
+    } else if (classes !== "0" || !classes) {
+      notify();
     }
 
     if (!filteredLesson && !filteredStudent) {
