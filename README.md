@@ -10,11 +10,11 @@ Examples from screen
 Home screen
 
 <div align="center">
-  <img src="https://ibb.co/2F1x1vW"  />
+  <img src="./src/assets/img/20.07.2024_03.27.35_REC.png"  />
 </div>
 
 Student page
 
 <div align="center">
-  <img src="https://ibb.co/cy431Tz"  />
+  <img src="./src/assets/img/20.07.2024_03.28.40_REC.png"  />
 </div>
