@@ -39,6 +39,7 @@ export default function Students() {
     formState: { errors },
     reset,
     setValue,
+    setFocus,
   } = useForm<Student>({
     resolver: yupResolver(studentSchema),
   });
@@ -95,7 +96,7 @@ export default function Students() {
                 {...register("name")}
                 fullWidth
                 id="outlined-basic"
-                label="Student Name"
+                label={editableStudent ? "" : "Student Name"}
                 variant="outlined"
                 helperText={errors.name && `${errors.name?.message}`}
               />
@@ -108,7 +109,7 @@ export default function Students() {
                 {...register("surname")}
                 fullWidth
                 id="outlined-basic"
-                label="Student Surname"
+                label={editableStudent ? "" : "Student Surname"}
                 variant="outlined"
                 helperText={errors.surname && `${errors.surname?.message}`}
               />
@@ -122,7 +123,7 @@ export default function Students() {
                 fullWidth
                 type="number"
                 id="outlined-basic"
-                label="Student No"
+                label={editableStudent ? "" : "Student No"}
                 variant="outlined"
                 helperText={errors.no && `${errors.no?.message}`}
               />
@@ -135,7 +136,7 @@ export default function Students() {
                 {...register("classes")}
                 fullWidth
                 id="outlined-basic"
-                label="Class"
+                label={editableStudent ? "" : "Class"}
                 variant="outlined"
                 helperText={errors.classes && `${errors.classes?.message}`}
               />

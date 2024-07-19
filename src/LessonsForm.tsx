@@ -96,7 +96,7 @@ export default function Lessons() {
                 {...register("lessonName")}
                 fullWidth
                 id="outlined-basic"
-                label="Lesson Name"
+                label={editableLesson ? "" : "Lesson Name"}
                 variant="outlined"
                 helperText={
                   errors.lessonName && `${errors.lessonName?.message}`
@@ -111,7 +111,7 @@ export default function Lessons() {
                 {...register("teacherName")}
                 fullWidth
                 id="outlined-basic"
-                label="Teacher name"
+                label={editableLesson ? "" : "Teacher Name"}
                 variant="outlined"
                 helperText={
                   errors.teacherName && `${errors.teacherName?.message}`
@@ -127,7 +127,7 @@ export default function Lessons() {
                 fullWidth
                 type="number"
                 id="outlined-basic"
-                label="Teacher No"
+                label={editableLesson ? "" : "Teacher No"}
                 variant="outlined"
                 helperText={errors.no && `${errors.no?.message}`}
               />
@@ -140,7 +140,7 @@ export default function Lessons() {
                 {...register("classes")}
                 fullWidth
                 id="outlined-basic"
-                label="Class"
+                label={editableLesson ? "" : "Class"}
                 variant="outlined"
                 helperText={errors.classes && `${errors.classes?.message}`}
               />
