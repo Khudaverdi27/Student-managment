@@ -1,3 +1,6 @@
+git clone link : https://github.com/Khudaverdi27/Student-managment.git
+demo link: https://student-managmen.vercel.app/
+
 School management system
 
 1. The user can add a new student
@@ -17,4 +20,10 @@ Student page
 
 <div align="center">
   <img src="./src/assets/img/20.07.2024_03.28.40_REC.png"  />
+</div>
+
+Result page
+
+<div align="center">
+  <img src="./src/assets/img/20.07.2024_03.32.29_REC.png"  />
 </div>
