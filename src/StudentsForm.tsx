@@ -18,6 +18,7 @@ import { Student } from "./types/student";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import img from "./assets/img/score.png";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -39,7 +40,6 @@ export default function Students() {
     formState: { errors },
     reset,
     setValue,
-    setFocus,
   } = useForm<Student>({
     resolver: yupResolver(studentSchema),
   });
@@ -83,8 +83,21 @@ export default function Students() {
   };
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <Button variant="contained" onClick={() => goBack()}>
+    <Box
+      sx={{
+        flexGrow: 1,
+        backgroundImage: `url(${img})`,
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "cover",
+        height: "95vh",
+      }}
+    >
+      <Button
+        style={{ marginBottom: "20px" }}
+        variant="contained"
+        color="secondary"
+        onClick={() => goBack()}
+      >
         Back
       </Button>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -95,7 +108,7 @@ export default function Students() {
                 FormHelperTextProps={{ sx: { color: "red" } }}
                 {...register("name")}
                 fullWidth
-                id="outlined-basic"
+                id="outlined-textarea"
                 label={editableStudent ? "" : "Student Name"}
                 variant="outlined"
                 helperText={errors.name && `${errors.name?.message}`}
@@ -144,7 +157,7 @@ export default function Students() {
           </Grid>
           <Grid item xs={12}>
             <Item>
-              <Button type="submit" variant="contained" color="primary">
+              <Button type="submit" variant="contained" color="success">
                 {editableStudent ? "Update" : "Submit"}
               </Button>
             </Item>

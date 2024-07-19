@@ -12,6 +12,7 @@ import { Lesson } from "./types/student";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import LessonsTable from "./LessonsTable";
+import img from "./assets/img/lesson.png";
 import {
   addLesson,
   deleteLesson,
@@ -83,8 +84,16 @@ export default function Lessons() {
   };
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <Button variant="contained" onClick={() => goBack()}>
+    <Box
+      sx={{
+        flexGrow: 1,
+        backgroundImage: `url(${img})`,
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "cover",
+        height: "95vh",
+      }}
+    >
+      <Button color="secondary" variant="contained" onClick={() => goBack()}>
         Back
       </Button>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -148,7 +157,7 @@ export default function Lessons() {
           </Grid>
           <Grid item xs={12}>
             <Item>
-              <Button type="submit" variant="contained" color="primary">
+              <Button type="submit" variant="contained" color="success">
                 {editableLesson ? "Update" : "Submit"}
               </Button>
             </Item>

@@ -14,7 +14,7 @@ function ScoresTable() {
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
-        <TableHead>
+        <TableHead sx={{ bgcolor: "#6E99F4" }}>
           <TableRow>
             <TableCell sx={{ fontWeight: "bold" }}>Student</TableCell>
             <TableCell sx={{ fontWeight: "bold" }} align="center">

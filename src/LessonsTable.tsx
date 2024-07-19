@@ -19,7 +19,7 @@ export default function LessonsTable({
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
-        <TableHead>
+        <TableHead sx={{ bgcolor: "#ddd" }}>
           <TableRow>
             <TableCell sx={{ fontWeight: "bold" }}>Lesson Name</TableCell>
             <TableCell sx={{ fontWeight: "bold" }} align="center">

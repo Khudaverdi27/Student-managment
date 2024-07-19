@@ -8,6 +8,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { useSelector } from "react-redux";
+import img from "./assets/img/score.png";
 import {
   studentsArray,
   lessonsArray,
@@ -118,10 +119,19 @@ export default function Scores() {
   };
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box
+      sx={{
+        flexGrow: 1,
+        backgroundImage: `url(${img})`,
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "cover",
+        height: "95vh",
+      }}
+    >
       <Button
         style={{ marginBottom: "20px" }}
         variant="contained"
+        color="secondary"
         onClick={goBack}
       >
         Back
@@ -130,7 +140,7 @@ export default function Scores() {
       <form onSubmit={handleSubmit}>
         <Grid container spacing={2}>
           <Grid item xs={2}>
-            <FormControl fullWidth>
+            <FormControl sx={{ boxShadow: 2, bgcolor: "#ddd" }} fullWidth>
               <InputLabel id="student-select-label">Student</InputLabel>
               <Select
                 labelId="student-select-label"
@@ -148,7 +158,7 @@ export default function Scores() {
             </FormControl>
           </Grid>
           <Grid item xs={2}>
-            <FormControl fullWidth>
+            <FormControl sx={{ boxShadow: 2, bgcolor: "#ddd" }} fullWidth>
               <InputLabel id="teacher-select-label">Teacher</InputLabel>
               <Select
                 labelId="teacher-select-label"
@@ -166,7 +176,7 @@ export default function Scores() {
             </FormControl>
           </Grid>
           <Grid item xs={2}>
-            <FormControl fullWidth>
+            <FormControl sx={{ boxShadow: 2, bgcolor: "#ddd" }} fullWidth>
               <InputLabel id="lesson-select-label">Lesson</InputLabel>
               <Select
                 labelId="lesson-select-label"
@@ -184,15 +194,30 @@ export default function Scores() {
             </FormControl>
           </Grid>
           <Grid item xs={2}>
-            <Box sx={{ border: 1, paddingY: 2, paddingLeft: 1 }}>{classes}</Box>
+            <Box
+              sx={{
+                boxShadow: 2,
+                border: 1,
+                paddingY: 2,
+                paddingLeft: 1,
+                borderColor: "grey.500",
+                bgcolor: "#ddd",
+              }}
+            >
+              {classes}
+            </Box>
           </Grid>
           <Grid item xs={2}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker onChange={handleDateChange} />
+              <DatePicker
+                sx={{ boxShadow: 2, bgcolor: "#ddd" }}
+                onChange={handleDateChange}
+              />
             </LocalizationProvider>
           </Grid>
           <Grid item xs={2}>
             <TextField
+              sx={{ boxShadow: 2, bgcolor: "#ddd" }}
               onChange={(e) => setScore(e.target.value)}
               type="number"
               id="score"
@@ -202,7 +227,7 @@ export default function Scores() {
           </Grid>
           <Grid item xs={12}>
             <Item>
-              <Button type="submit" variant="contained" color="primary">
+              <Button type="submit" variant="contained" color="success">
                 Submit
               </Button>
             </Item>
